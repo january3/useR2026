@@ -25,6 +25,7 @@ $font-family-sans-serif:
 $body-font: $font-family-sans-serif;
 $presentation-heading-font: $font-family-sans-serif;
 $presentation-title-slide-text-align: left;
+$presentation-font-size-root: 30px !default;
 
 $presentation-heading-color: $bih-DUNKELROT;
 $presentation-title-slide-text-align: left;
@@ -48,6 +49,7 @@ $code-color: $bih-KORALL;
 
 .subtitle { color: $bih-HELLROSA !important; }
 
+.aside { color: $bih-HELLROSA !important; }
 
 #title-slide {
   transform: translate(-10%, 10%);

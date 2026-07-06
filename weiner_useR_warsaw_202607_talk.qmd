@@ -1,5 +1,5 @@
 ---
-title: "Scientific Accountability in Shiny Apps"
+title: "Scientific Accountability"
 subtitle: "Generating reproducible reports with Shiny apps"
 author: 
   - name: "January Weiner"
@@ -27,156 +27,169 @@ format:
     self-contained: true
 ---
 
+## The CUBI environment
 
-## Reproducibility vs Accountability
+:::: {.columns}
 
-::: {.aside}
-In practice, what is reproducible, is not accountable.
+::: {.column width="25%"}
+
+ * Clinical and translational research
+ * Large university hospital and related institutions (BIH, MDC, Charité)
+
 :::
+::: {.column width="5%"}
+:::
+
+::: {.column width="70%"}
+
+![](images/stack1.png)
+
+
+:::
+::::
 
 ## The CUBI environment
 
-## Customization
+:::: {.columns}
 
- * Check the `files` folder for alternate background images and logos.
- * Some of the changes you can make directly in this qmd file
- * Others require you to edit the `cubi.scss` file.
+::: {.column width="25%"}
 
-For example, to make the title slide with white background, you can use the
-`files/title_background_white.svg` file, but you will also have to change
-the `title`, `subtitle` and `quarto-title-author` colors in the `cubi.scss`
-file, otherwise they will stay white.
+ * Clinical and translational research
+ * Large university hospital and related institutions (BIH, MDC, Charité)
 
-## Multicolumn slide
+:::
+::: {.column width="5%"}
+:::
+
+::: {.column width="70%"}
+
+![](images/stack2.png)
+
+
+:::
+::::
+
+## The CUBI environment
 
 :::: {.columns}
 
-::: {.column width="40%" .fragment}
-### Left column title
+::: {.column width="25%"}
 
-Left column...
+ * Clinical and translational research
+ * Large university hospital and related institutions (BIH, MDC, Charité)
+
+:::
+::: {.column width="5%"}
 :::
 
-::: {.column width="60%" .fragment}
-### Right column title
+::: {.column width="70%"}
 
-Right column (60%)...
+![](images/stack3.png)
 
-(adding `.fragment` causes the contents to be displayed in steps)
+
 :::
-
 ::::
 
 
+## Reproducibility vs Accountability
 
-# Part II separator slide {.inverse background-image="files/divider_slide_bg.svg"}
+![](images/fig1.png)
 
-## Simple numbered and unnumbered lists
+In a high-throughput bioinformatic project, a lot of analyses, models, figures,
+tables are generated. 
 
-:::: {.columns}
+## Reproducibility vs Accountability
 
-::: {.column width="50%"}
- * One
- * Two
-:::
+![](images/fig2.png)
 
-::: {.column width="50%"}
- 1. One
- 2. Two
-:::
+Only some of them make it to the final paper.
 
-::::
+## Reproducibility vs Accountability
 
-## Incremental list
+![](images/fig3.png)
 
-::: {.incremental}
- - Item 1
- - Item 2
- - Item 3
-:::
+When you read a paper, how do you link the figures back to the data?
 
+## Reproducibility vs Accountability
 
-## Incremental contents
+![](images/fig4.png)
 
-First part
+We know how to do it: use R! (and Rmarkdown, Quarto, etc.)
+In practice, what is reproducible, is often not accountable.
 
-. . .
+# How to turn interactive work into reproducible reports? {.inverse}
 
-Second part
+## The Bioshmods project
 
 
----
-
-This is a slide without a title (use the dashes to separate)
-
-## Transitions {transition="zoom"}
-
-Define them in the YAML header or like here, in the slide title.
-
-Types: none, fade, slide, convex, concave, zoom
-
-
-## Code 
-
-
-```{r}
+```{r eval=FALSE}
+#| code-line-numbers: "|1-2|4-8|10-26|27"
 #| echo: true
-#| output-location: column-fragment
-#| label: fig-sample
-#| fig-cap: A dumb plot
-plot(1:10)
+library(bioshmods)
+data(C19)
+
+ui <- fluidPage(
+       fluidRow(selectizeInput("id", label="Search for a gene",
+         choices=NULL),
+       fluidRow(geneBrowserPlotUI("gplot", TRUE))
+       ))
+
+server <- function(input, output, session) {
+  gene_id <- reactiveValues()
+  updateSelectizeInput(session, "id", choices=C19$annotation$SYMBOL)
+
+  # translate symbol to primary ID
+  observeEvent(input$id, {
+    nn <- match(input$id, C19$annotation$SYMBOL)
+    gene_id$id <- C19$annotation$PrimaryID[ nn ]
+  })
+
+  geneBrowserPlotServer("gplot", gene_id=gene_id, 
+                        covar=C19$covariates, 
+                        exprs=C19$expression,
+                        annot=C19$annotation, 
+                        cntr=C19$contrasts
+   )
+}
+shinyApp(ui, server)
 ```
 
-::: {.callout-tip}
-Ctrl-click on the image to zoom. And here is a `r pi` for you.
-:::
+## The Bioshmods project
 
-## Code
+![](images/bioshmods1.png)
 
-There are many customization options for the code. For example, you can
-highlight (and even animate) certain lines of code:
+## The Bioshmods project
 
+![](images/bioshmods2.png)
 
-```{r}
-#| code-line-numbers: "|1|2|3|"
-#| echo: true
-a <- rnorm(10)
-b <- rnorm(10) + a
-c <- a + b * rnorm(10)
-```
+## The Bioshmods project
 
-You can also specify where precisely should the output of the code go:
-below the code (default), on the next slide, on a right-hand column...
-
-
-
+![](images/overview_small.png)
 
 ## Thank you {.inverse}
 
 :::: {.columns}
 
-::: {.column width="40%"}
-Acknowledgements
+::: {.column width="60%"}
+Links
 
- - N.N.
- - Y.Y.
+ - github.com/january3/useR2026
+ - github.com/bihealth/bioshmods
+
+I'd love to hear your feedback!
  
 :::
 
-::: {.column width="40%"}
-Sources
-
- - Source 1
- - Source 2
+::: {.column width="10%"}
 :::
 
-::: {.column width="20%"}
+::: {.column width="30%"}
 
 ```{r}
 #| fig-width: 5
 #| fig-height: 5
 library(qrcode)
-plot(qr_code("https://google.com"))
+plot(qr_code("https://github.com/january3/useR2026"))
 ```
 
 
@@ -185,3 +198,4 @@ plot(qr_code("https://google.com"))
 
 
 ::::
+
